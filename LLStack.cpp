@@ -6,7 +6,11 @@
 	// so be sure that the "next" Node is linked to a nullptr
 Node::Node(string s) 
 {
-
+	//assigs parameter to data 
+	data = s;
+	//holds the next linked node
+	//first initialized as null to ensure that next is not pointing to any other memory that is unrelated to the node
+	next = nullptr;
 }
 
 //constructor : initiazlize the head and tail field from LLStack class 
@@ -14,17 +18,24 @@ Node::Node(string s)
 	// the head and tail should both be initialized as null pointers
 LLStack::LLStack()
 {
-
+	//intially pointers are set to NULL because there are no nodes
+	head = nullptr;
+	tail = nullptr;
+	count = 0;  //initialize to 0 because otherwise it will hold random junk and give issues for counter
 }
 
-/*
-	define the top() method, which will return the data at the top of the stack
-	(remember the "top" of the stack is the newest element)
-	If stack is empty, return "";
-*/
+//define the top() method, which will return the data at the top of the stack
+//	(remember the "top" of the stack is the newest element)
+//	If stack is empty, return "";
 string LLStack::top()
 {
-	return "fixthis";
+	if(size() <= 0){
+		return "";
+	}
+	else{
+		//returns the data hold at the last node(head is same as top of stack in this case)
+	return head->data;
+	}
 }
 
 /*
@@ -32,7 +43,7 @@ string LLStack::top()
 */
 int LLStack::size()
 {
-	return -1;
+	return count;
 }
 
 /*
@@ -45,6 +56,25 @@ int LLStack::size()
 */
 void LLStack::push(string s)
 {
+	//creates a new pointer for the new node
+	Node* newNode = new Node(s);
+	//newNode ->data = s; //stores string in new node
+	newNode ->next=nullptr; //safety measure to make sure 
+	
+	if(head == nullptr){
+		head = newNode;
+		tail = newNode;
+	}
+	else{
+		newNode->next = head; //makes the next node the previous head. In other words it stores the previous node before a new one was pushed
+		//in this case imagine the list reading from left to right but new nodes are adding to the leftmost of the list.
+		//this is why it is being labeled as next when really it's the previous node from the new one.
+
+		head = newNode; //now the head (or top of stack) is pointing to the newly created node.
+		
+	}
+
+	count++;
 
 }
 
@@ -57,7 +87,24 @@ void LLStack::push(string s)
 */
 void LLStack::pop()
 {
+	if(head == nullptr){
+		return;
+	}
 
+	//pointer to hold node that is to be deleted
+Node* temp = head;
+
+	if(head == tail){
+		head = nullptr;
+		tail = nullptr;
+	}
+	else{
+		head = head->next;
+	}
+
+	//clears the memory for the removed node
+	delete temp;
+	count--;
 }
 
 /*
@@ -82,6 +129,37 @@ void LLStack::pop()
 */
 int LLStack::removeAll(const string& target) 
 {
-	return -1;
+	int removed = 0;
+	Node* current = head;
+	Node* prev = nullptr;
+
+	while(current != nullptr){
+		if(current->data == target){
+			Node* temp = current;
+			if(prev == nullptr){
+				head = current->next;
+				current = head;
+			}
+			else{
+				prev->next = current->next;
+				current = current->next;
+			}
+			delete temp;
+			removed++;
+			count--;
+		}
+		else{
+			prev = current;
+			current = current->next;
+		}
+
+	}
+	if(head == nullptr){
+		tail = nullptr;
+	}
+	else{
+		tail = prev;
+	}
+	return removed;
 }
 
